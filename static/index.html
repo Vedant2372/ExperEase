@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpertEase - Healthcare Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .api-list {
+            list-style: none;
+            padding: 0;
+        }
+        .api-item {
+            background: #f8f9fa;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .api-item h3 {
+            margin: 0 0 10px 0;
+            color: #007bff;
+        }
+        .test-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-btn:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 ExpertEase - Backend API Server</h1>
+        <p>Welcome to ExpertEase Healthcare Platform Backend API</p>
+        
+        <h2>🔧 Available API Endpoints</h2>
+        <ul class="api-list">
+            <li class="api-item">
+                <h3>🔐 Authentication</h3>
+                <button class="test-btn" onclick="testAPI('/signup', 'POST', {name: 'Test User', username: 'testuser', password: 'test123', email: 'test@example.com'})">Test Signup</button>
+                <button class="test-btn" onclick="testAPI('/login', 'POST', {username: 'testuser', password: 'test123'})">Test Login</button>
+                <div id="auth-result"></div>
+            </li>
+            
+            <li class="api-item">
+                <h3>🏥 Healthcare</h3>
+                <button class="test-btn" onclick="testAPI('/healthcare/specializations', 'GET')">Test Specializations</button>
+                <button class="test-btn" onclick="testAPI('/healthcare/doctors', 'GET')">Test Doctors</button>
+                <button class="test-btn" onclick="testAPI('/healthcare/search?q=doctor', 'GET')">Test Search</button>
+                <div id="healthcare-result"></div>
+            </li>
+            
+            <li class="api-item">
+                <h3>🤖 AI Care</h3>
+                <button class="test-btn" onclick="testAPI('/healthcare/ai-care', 'POST', {symptoms: 'I have headache', user_id: '1', action: 'chat'})">Test AI Care</button>
+                <div id="ai-result"></div>
+            </li>
+            
+            <li class="api-item">
+                <h3>📅 Appointments</h3>
+                <button class="test-btn" onclick="testAPI('/user/appointments', 'GET')">Test User Appointments</button>
+                <button class="test-btn" onclick="testAPI('/book-appointment', 'POST', {user_id: 1, worker_id: 1, user_name: 'Test User', symptoms: 'Test symptoms', date: '2024-12-25', time_slot: '10:00 AM'})">Test Booking</button>
+                <div id="appointment-result"></div>
+            </li>
+            
+            <li class="api-item">
+                <h3>👷 Worker</h3>
+                <button class="test-btn" onclick="testAPI('/worker/login', 'POST', {email: 'test@example.com'})">Test Worker Login</button>
+                <button class="test-btn" onclick="testAPI('/admin/workers/pending', 'GET')">Test Pending Workers</button>
+                <div id="worker-result"></div>
+            </li>
+            
+            <li class="api-item">
+                <h3>👑 Admin</h3>
+                <button class="test-btn" onclick="testAPI('/admin/login', 'POST', {username: 'admin', password: 'admin123'})">Test Admin Login</button>
+                <div id="admin-result"></div>
+            </li>
+        </ul>
+        
+        <h2>🚀 Server Status</h2>
+        <div id="server-status">
+            <button class="test-btn" onclick="checkServerStatus()">Check Server Status</button>
+            <div id="status-result"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        
+        async function testAPI(endpoint, method, data = null) {
+            const resultDiv = event.target.closest('.api-item').querySelector('[id$="-result"]');
+            resultDiv.innerHTML = '<div class="result">Testing...</div>';
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(API_BASE + endpoint, options);
+                const result = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="result success">
+                        <strong>✅ ${method} ${endpoint}</strong><br>
+                        Status: ${response.status}<br>
+                        Response: ${JSON.stringify(result, null, 2)}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>❌ ${method} ${endpoint}</strong><br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function checkServerStatus() {
+            const statusDiv = document.getElementById('status-result');
+            statusDiv.innerHTML = '<div class="result">Checking...</div>';
+            
+            try {
+                const response = await fetch(API_BASE + '/healthcare/doctors');
+                const status = response.ok ? 'Server is running' : 'Server error';
+                const statusClass = response.ok ? 'success' : 'error';
+                
+                statusDiv.innerHTML = `
+                    <div class="result ${statusClass}">
+                        <strong>🔧 Server Status:</strong> ${status}<br>
+                        Response Time: ${new Date().toLocaleTimeString()}
+                    </div>
+                `;
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>❌ Server Status:</strong> Cannot connect to server<br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        // Auto-check server status on load
+        checkServerStatus();
+    </script>
+</body>
+</html>

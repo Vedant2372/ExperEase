@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpertEase - Video Consultation</title>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .header .appointment-info {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            height: 600px;
+        }
+        
+        .video-section {
+            flex: 1;
+            background: #f5f5f5;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        
+        .local-video {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 200px;
+            height: 150px;
+            border-radius: 8px;
+            border: 3px solid #4CAF50;
+            z-index: 10;
+        }
+        
+        .controls-section {
+            width: 300px;
+            background: white;
+            padding: 20px;
+            border-left: 1px solid #e0e0e0;
+        }
+        
+        .otp-section {
+            margin-bottom: 20px;
+        }
+        
+        .otp-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status-section {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .status-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2196F3;
+        }
+        
+        .prescription-section {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+        }
+        
+        .file-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            max-width: 300px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .notification.info {
+            background: #2196F3;
+        }
+        
+        .notification.success {
+            background: #4CAF50;
+        }
+        
+        .notification.error {
+            background: #f44336;
+        }
+        
+        .waiting-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        
+        .waiting-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .waiting-content h2 {
+            margin-bottom: 10px;
+        }
+        
+        .call-timer {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .controls-section {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid #e0e0e0;
+            }
+            
+            .local-video {
+                width: 120px;
+                height: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 ExpertEase Video Consultation</h1>
+            <div class="appointment-info">
+                Appointment ID: {{ appointment_id }} | 
+                {% if role == 'doctor' %}Doctor{% else %}Patient{% endif %} View |
+                Room: {{ room_name }}
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="video-section">
+                <div class="video-container">
+                    <video id="remote-video" autoplay playsinline></video>
+                    <video id="local-video" autoplay playsinline muted class="local-video" style="display: none;"></video>
+                    <div id="call-timer" class="call-timer" style="display: none;">00:00</div>
+                </div>
+            </div>
+            
+            <div class="controls-section">
+                <!-- OTP Verification Section -->
+                <div id="otp-section" class="otp-section">
+                    <div class="status-title">🔐 Doctor Verification Required</div>
+                    <input type="text" id="otp-input" class="otp-input" placeholder="Enter 6-digit OTP" maxlength="6">
+                    <button id="verify-otp-btn" class="btn btn-primary">Verify OTP</button>
+                </div>
+                
+                <!-- Call Controls -->
+                <div id="call-controls" style="display: none;">
+                    <div class="status-section">
+                        <div class="status-title">📞 Call Status</div>
+                        <div id="status-message">Ready to start call</div>
+                    </div>
+                    
+                    <button id="start-call-btn" class="btn btn-primary">🎥 Start Call</button>
+                    <button id="end-call-btn" class="btn btn-danger" style="display: none;">📞 End Call</button>
+                </div>
+                
+                <!-- Prescription Upload (Doctor Only) -->
+                {% if role == 'doctor' %}
+                <div id="prescription-section" class="prescription-section" style="display: none;">
+                    <div class="status-title">📝 Upload Prescription</div>
+                    <input type="file" id="prescription-input" class="file-input" accept=".pdf,.jpg,.jpeg,.png">
+                    <button id="upload-btn" class="btn btn-primary">📤 Upload</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div id="notifications"></div>
+    <div id="waiting-overlay" class="waiting-overlay" style="display: none;">
+        <div class="waiting-content">
+            <h2>⏳ Waiting for {% if role == 'doctor' %}Patient{% else %}Doctor{% endif %}...</h2>
+            <p>{% if role == 'doctor' %}Patient will join when you start the consultation{% else %}Please wait for doctor to start the consultation{% endif %}</p>
+        </div>
+    </div>
+
+    <script src="/static/webrtc.js"></script>
+    <script>
+        // Global variables
+        const appointmentId = {{ appointment_id }};
+        const role = "{{ role }}";
+        const roomName = "{{ room_name }}";
+        
+        // UI Elements
+        const otpSection = document.getElementById('otp-section');
+        const callControls = document.getElementById('call-controls');
+        const prescriptionSection = document.getElementById('prescription-section');
+        const waitingOverlay = document.getElementById('waiting-overlay');
+        const statusMessage = document.getElementById('status-message');
+        const callTimer = document.getElementById('call-timer');
+        
+        let socket = null;
+        let peer = null;
+        let localStream = null;
+        let callStartTime = null;
+        let timerInterval = null;
+        
+        // Initialize Socket.IO connection
+        function initializeSocket() {
+            socket = io();
+            
+            socket.on('connect', () => {
+                console.log('🔗 Connected to signaling server');
+                joinRoom();
+            });
+            
+            socket.on('otp_verified', (data) => {
+                console.log('🔐 OTP verified:', data);
+                if (role === 'user') {
+                    hideWaiting();
+                    enableCallControls();
+                    showNotification('Doctor has started the consultation!', 'success');
+                }
+            });
+            
+            socket.on('new_prescription', (data) => {
+                console.log('📝 New prescription:', data);
+                if (role === 'user') {
+                    showNotification('New prescription available!', 'info');
+                    showDownloadLink(data.filename, data.download_url);
+                }
+            });
+            
+            socket.on('call_ended', (data) => {
+                console.log('📞 Call ended:', data);
+                endCall();
+                showNotification('Consultation completed', 'info');
+            });
+            
+            socket.on('user_joined', (data) => {
+                console.log('👤 User joined:', data);
+                if (data.role === 'doctor') {
+                    showNotification('Patient has joined the consultation', 'info');
+                }
+            });
+            
+            socket.on('waiting_for_doctor', (data) => {
+                console.log('⏳ Waiting for doctor:', data);
+                showWaiting(data.message);
+            });
+            
+            socket.on('waiting_for_otp', (data) => {
+                console.log('🔐 Waiting for OTP:', data);
+                if (role === 'doctor') {
+                    showWaiting(data.message);
+                }
+            });
+        }
+        
+        // Join video room
+        function joinRoom() {
+            socket.emit('join_room', {
+                room: roomName,
+                appointment_id: appointmentId,
+                role: role
+            });
+        }
+        
+        // OTP Verification
+        document.getElementById('verify-otp-btn').addEventListener('click', verifyOTP);
+        document.getElementById('otp-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                verifyOTP();
+            }
+        });
+        
+        async function verifyOTP() {
+            const otp = document.getElementById('otp-input').value.trim();
+            
+            if (!otp || otp.length !== 6) {
+                showNotification('Please enter a valid 6-digit OTP', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/video/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        appointment_id: appointmentId,
+                        otp: otp
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('OTP verified successfully!', 'success');
+                    hideOTPSection();
+                    enableCallControls();
+                    
+                    // Notify other user
+                    socket.emit('otp_verified', {
+                        appointment_id: appointmentId,
+                        message: 'OTP verified - Call can start'
+                    });
+                } else {
+                    showNotification(result.error || 'Invalid OTP', 'error');
+                }
+                
+            } catch (error) {
+                console.error('OTP verification error:', error);
+                showNotification('Failed to verify OTP', 'error');
+            }
+        }
+        
+        // Start Call (Doctor)
+        document.getElementById('start-call-btn').addEventListener('click', startCall);
+        
+        async function startCall() {
+            if (role !== 'doctor') {
+                showNotification('Only doctor can start the call', 'error');
+                return;
+            }
+            
+            try {
+                // Get user media
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: true
+                });
+                
+                // Show local video
+                const localVideo = document.getElementById('local-video');
+                localVideo.srcObject = localStream;
+                localVideo.style.display = 'block';
+                
+                // Initialize WebRTC peer
+                // This would use the WebRTC utils
+                console.log('🎥 Starting video call...');
+                showNotification('Call started!', 'success');
+                startCallTimer();
+                
+                // Hide waiting overlay
+                hideWaiting();
+                
+            } catch (error) {
+                console.error('Failed to start call:', error);
+                showNotification('Failed to access camera/microphone', 'error');
+            }
+        }
+        
+        // End Call
+        document.getElementById('end-call-btn').addEventListener('click', endCall);
+        
+        function endCall() {
+            // Stop media tracks
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            
+            // Hide local video
+            const localVideo = document.getElementById('local-video');
+            localVideo.style.display = 'none';
+            
+            // Clear remote video
+            const remoteVideo = document.getElementById('remote-video');
+            remoteVideo.srcObject = null;
+            
+            // Stop timer
+            stopCallTimer();
+            
+            // Show end call button
+            document.getElementById('end-call-btn').style.display = 'none';
+            
+            // Notify server
+            socket.emit('end_call', {
+                room: roomName,
+                appointment_id: appointmentId
+            });
+            
+            showNotification('Call ended', 'info');
+        }
+        
+        // Prescription Upload (Doctor)
+        document.getElementById('upload-btn').addEventListener('click', uploadPrescription);
+        
+        async function uploadPrescription() {
+            const fileInput = document.getElementById('prescription-input');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showNotification('Please select a file', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch(`/video/upload-prescription/${appointmentId}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Prescription uploaded successfully!', 'success');
+                    fileInput.value = '';
+                } else {
+                    showNotification(result.error || 'Upload failed', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                showNotification('Failed to upload prescription', 'error');
+            }
+        }
+        
+        // UI Helper Functions
+        function showWaiting(message = 'Waiting for other participant...') {
+            waitingOverlay.querySelector('p').textContent = message;
+            waitingOverlay.style.display = 'flex';
+        }
+        
+        function hideWaiting() {
+            waitingOverlay.style.display = 'none';
+        }
+        
+        function hideOTPSection() {
+            otpSection.style.display = 'none';
+        }
+        
+        function enableCallControls() {
+            callControls.style.display = 'block';
+            document.getElementById('start-call-btn').style.display = 'none';
+            document.getElementById('end-call-btn').style.display = 'block';
+            
+            if (role === 'doctor') {
+                prescriptionSection.style.display = 'block';
+            }
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+        
+        function showDownloadLink(filename, downloadUrl) {
+            const downloadDiv = document.createElement('div');
+            downloadDiv.innerHTML = `
+                <div class="status-section">
+                    <div class="status-title">📄 Prescription Available</div>
+                    <a href="${downloadUrl}" download="${filename}" class="btn btn-primary">📥 Download ${filename}</a>
+                </div>
+            `;
+            
+            callControls.appendChild(downloadDiv);
+        }
+        
+        function startCallTimer() {
+            callStartTime = Date.now();
+            timerInterval = setInterval(updateCallTimer, 1000);
+        }
+        
+        function updateCallTimer() {
+            if (!callStartTime) return;
+            
+            const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            
+            callTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        function stopCallTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            callTimer.style.display = 'none';
+        }
+        
+        // Check initial call status
+        function checkCallStatus() {
+            // For patients, check if doctor has verified OTP
+            if (role === 'user') {
+                showWaiting('Waiting for doctor to start consultation...');
+            } else {
+                // For doctors, show OTP verification
+                otpSection.style.display = 'block';
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSocket();
+            checkCallStatus();
+        });
+    </script>
+</body>
+</html>

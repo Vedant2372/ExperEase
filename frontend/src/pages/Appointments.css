@@ -1,0 +1,101 @@
+.appointments-page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.auth-required {
+  text-align: center;
+  padding: 2rem;
+}
+
+.auth-required a {
+  color: #0d9488;
+  font-weight: 600;
+}
+
+.appointments-header {
+  margin-bottom: 2rem;
+}
+
+.appointments-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.appointments-header p {
+  margin: 0.25rem 0 0;
+  color: #64748b;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.section h2 {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 0.75rem;
+}
+
+.card.past {
+  opacity: 0.8;
+}
+
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.badge.clinic { background: #d1fae5; }
+.badge.video { background: #e0e7ff; }
+
+.apt-info {
+  flex: 1;
+}
+
+.apt-info strong { display: block; }
+.apt-info span { font-size: 0.9rem; color: #64748b; display: block; }
+.apt-info .symptoms { font-size: 0.85rem; margin-top: 0.25rem; }
+
+.status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+.status.pending { background: #fef3c7; }
+.status.accepted { background: #d1fae5; }
+.status.completed { background: #e0e7ff; }
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-state p:first-of-type { font-size: 2rem; margin-bottom: 0.5rem; }
+.empty-state p:nth-of-type(2) { color: #64748b; margin-bottom: 1.5rem; }
+
+.btn-primary {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: #0d9488;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}

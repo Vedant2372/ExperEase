@@ -1,0 +1,97 @@
+.ai-care-page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 120px);
+}
+
+.ai-header {
+  margin-bottom: 1.5rem;
+}
+
+.ai-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.ai-header p {
+  margin: 0.25rem 0 0;
+  color: #64748b;
+}
+
+.chat-area {
+  flex: 1;
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1rem;
+  overflow-y: auto;
+  min-height: 300px;
+}
+
+.welcome {
+  color: #64748b;
+  text-align: center;
+  padding: 2rem;
+}
+
+.message {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  max-width: 85%;
+}
+
+.message.user {
+  background: #0d9488;
+  color: white;
+  margin-left: auto;
+}
+
+.message.assistant {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.suggested-doctors {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.doctor-link {
+  display: block;
+  color: #0d9488;
+  margin-top: 0.5rem;
+  text-decoration: none;
+}
+
+.doctor-link:hover {
+  text-decoration: underline;
+}
+
+.input-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input-form input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.input-form button {
+  padding: 0.75rem 1.25rem;
+  background: #0d9488;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}

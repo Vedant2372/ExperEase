@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "ExpertEase",
+    "slug": "expertease-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#0D9488"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.expertease.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0D9488"
+      },
+      "package": "com.expertease.mobile"
+    }
+  }
+}

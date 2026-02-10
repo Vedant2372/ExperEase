@@ -1,0 +1,118 @@
+.doctors-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.doctors-header {
+  margin-bottom: 1.5rem;
+}
+
+.doctors-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.doctors-header p {
+  margin: 0.25rem 0 0;
+  color: #64748b;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.chip {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.chip:hover,
+.chip.active {
+  background: #0d9488;
+  color: white;
+  border-color: #0d9488;
+}
+
+.doctor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.doctor-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  text-decoration: none;
+  color: inherit;
+}
+
+.doctor-card:hover {
+  background: #f8fafc;
+}
+
+.doctor-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #0d948820;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #0d9488;
+  margin-right: 1rem;
+}
+
+.doctor-info {
+  flex: 1;
+}
+
+.doctor-info strong {
+  display: block;
+}
+
+.doctor-info .spec {
+  color: #0d9488;
+  font-size: 0.9rem;
+}
+
+.doctor-info .meta,
+.doctor-info .location {
+  display: block;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.chevron {
+  font-size: 1.5rem;
+  color: #94a3b8;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+}
